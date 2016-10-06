@@ -48,7 +48,7 @@
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "graphql": "^0.7.0",
-    "graphql-subscriptions": "^0.1.0",
+    "graphql-subscriptions": "^0.2.0",
     "graphql-tools": "^0.7.0",
     "knex": "^0.12.1",
     "lodash": "^4.12.0",
