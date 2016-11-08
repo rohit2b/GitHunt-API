@@ -8,6 +8,11 @@ import {
   GITHUB_CLIENT_SECRET,
 } from './githubKeys';
 
+import {
+  OPTICS_API_KEY,
+  OPTICS_ENDPOINT_URL,
+} from './opticsKeys';
+
 import { setUpGitHubLogin } from './githubLogin';
 import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
@@ -17,7 +22,13 @@ import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { subscriptionManager } from './subscriptions';
 
+// Instrument OpticsAgent
+import OpticsAgent from 'optics-agent';
+
 import schema from './schema';
+
+// Instrument OpticsAgent
+OpticsAgent.instrumentSchema(schema);
 
 let PORT = 3010;
 if (process.env.PORT) {
@@ -30,6 +41,9 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Instrument OpticsAgent
+app.use(OpticsAgent.middleware());
 
 setUpGitHubLogin(app);
 
@@ -67,6 +81,7 @@ app.use('/graphql', apolloExpress((req) => {
     context: {
       user,
       Repositories: new Repositories({ connector: gitHubConnector }),
+      opticsContext: OpticsAgent.context(req),
       Users: new Users({ connector: gitHubConnector }),
       Entries: new Entries(),
       Comments: new Comments(),
